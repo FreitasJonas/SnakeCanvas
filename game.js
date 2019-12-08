@@ -1,7 +1,7 @@
 const CANVAS_ID = "game";
 
-const COLUMNS = 20;
-const LINES = 40;
+const COLUMNS = 30;
+const LINES = 50;
 
 const CEL_SIZE = 12;
 
@@ -16,8 +16,13 @@ const KEYCODE_UP = 38;
 const KEYCODE_DOW = 40;
 const KEYCODE_RIGTH = 39;
 const KEYCODE_LEFT = 37;
+const KEYCODE_SPACE_BAR = 32;
 
-DEFICULTY = 5;
+score = 0;
+
+interval = null;
+
+DEFICULTY = 10;
 
 snakeDirection = KEYCODE_RIGTH;
 
@@ -38,7 +43,9 @@ window.onload = function (e) {
 
     snake.push(snakePosition);
 
-    window.setInterval(function (e) {
+    document.getElementById("scoreText").innerText = "Score: " + score;
+    
+    interval = window.setInterval(function (e) {
 
         drawBoard();
         processGame();
@@ -81,9 +88,27 @@ function processGame() {
         snake[0].line += 1;
     }
 
+    if (snake[0].col >= COLUMNS) {
+        snake[0].col = 0;
+    }
+    else if (snake[0].col < 0) {
+        snake[0].col = COLUMNS;
+    }
+    else if (snake[0].line >= LINES) {
+        snake[0].line = 0;
+    }
+    else if (snake[0].line < 0) {
+        snake[0].line = LINES;
+    }
+
     for (let i = 1; i < snake.length; i++) {
 
         if (snake[i] != null && snake[i] != undefined) {
+
+            //if colide with self body
+            if(snake[0].col == snake[i].col && snake[0].line == snake[i].line) {
+                window.clearInterval(interval);
+            }
 
             let pos = { col: snake[i].col, line: snake[i].line };
 
@@ -98,7 +123,9 @@ function processGame() {
     if (snake[0].col == applePosition.col && snake[0].line == applePosition.line) {
         applePosition = { col: Math.floor(Math.random() * (COLUMNS)), line: Math.floor(Math.random() * (LINES)) }
         addBodyUnity();
-    }
+        score++;
+        document.getElementById("scoreText").innerText = "Score: " + score;
+    }    
 }
 
 function addBodyUnity() {
