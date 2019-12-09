@@ -81,9 +81,9 @@ window.onload = function (e) {
 
     interval = window.setInterval(function (e) {
 
-        drawBoard();
-        processGame();
-        drawElements();
+        // drawBoard();
+        // processGame();
+        // drawElements();
 
     }, (1000 / DEFICULTY))
 }
