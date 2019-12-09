@@ -1,0 +1,9 @@
+.container {
+    display: flex;
+    justify-content: start;
+}
+
+.canvas-game {
+    margin-left: 10px;
+    margin-right: 10px;
+}
