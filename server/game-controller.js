@@ -16,9 +16,7 @@ module.exports = {
             CEL_COLOR: "#C0C0C0",
             APPLE_COLOR: "#d12300",
         
-            DEFICULTY: 10
+            DIFICULTY: 10
         }
-    }
-
-    
+    }    
   };

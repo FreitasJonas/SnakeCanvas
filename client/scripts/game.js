@@ -1,16 +1,16 @@
 const CANVAS_ID = "game";
 
-const COLUMNS = 30;
-const LINES = 50;
+// const COLUMNS = 30;
+// const LINES = 50;
 
-const CEL_SIZE = 12;
+// const CEL_SIZE = 12;
 
-const WIDTH = CEL_SIZE * COLUMNS;
-const HEIGHT = CEL_SIZE * LINES;
+// const WIDTH = CEL_SIZE * COLUMNS;
+// const HEIGHT = CEL_SIZE * LINES;
 
-const BG_COLOR = "#000000";
-const CEL_COLOR = "#C0C0C0";
-const APPLE_COLOR = "#d12300";
+// const BG_COLOR = "#000000";
+// const CEL_COLOR = "#C0C0C0";
+// const APPLE_COLOR = "#d12300";
 
 const KEYCODE_UP = 38;
 const KEYCODE_DOW = 40;
@@ -18,16 +18,14 @@ const KEYCODE_RIGTH = 39;
 const KEYCODE_LEFT = 37;
 const KEYCODE_SPACE_BAR = 32;
 
-score = 0;
+var parans = null;
+var interval = null;
 
-interval = null;
-
-DEFICULTY = 15;
-
-snakeDirection = KEYCODE_RIGTH;
-
-snake = [];
-applePosition = { col: 19, line: 10 };
+var score = 0;
+var DIFICULTY = 15;
+var snakeDirection = KEYCODE_RIGTH;
+var snake = [];
+var applePosition = { col: 19, line: 10 };
 
 moveFunctions = {
     ArrowUp: function () {
@@ -37,21 +35,21 @@ moveFunctions = {
             snakeDirection = KEYCODE_UP;
         }
     },
-    ArrowDown: function() {
+    ArrowDown: function () {
         console.log("ArrowDown()")
 
         if (snakeDirection !== KEYCODE_UP) {
             snakeDirection = KEYCODE_DOW;
         }
     },
-    ArrowRight: function() {
+    ArrowRight: function () {
         console.log("ArrowRight()")
 
         if (snakeDirection !== KEYCODE_LEFT) {
             snakeDirection = KEYCODE_RIGTH;
         }
     },
-    ArrowLeft: function() {
+    ArrowLeft: function () {
         console.log("ArrowLeft()")
 
         if (snakeDirection !== KEYCODE_RIGTH) {
@@ -63,29 +61,40 @@ moveFunctions = {
 window.onload = function (e) {
     console.log("Ready");
 
-    let ctx = document.getElementById(CANVAS_ID).getContext("2d");
-    ctx.canvas.width = WIDTH;
-    ctx.canvas.height = HEIGHT;
-    
     document.getElementById("scoreText").innerText = "Score: " + score;
-
     document.addEventListener('keydown', (event) => {
 
         let fnMove = moveFunctions[event.key];
-        if(fnMove) {
-            fnMove();
+            if (fnMove) {
+                fnMove();
+            }
         }
-    });
+    );
 
     snake.push({ col: 10, line: 10 });
 
+    // game layer
     interval = window.setInterval(function (e) {
 
-        // drawBoard();
-        // processGame();
-        // drawElements();
+        //getParans().then(updateParans);
 
-    }, (1000 / DEFICULTY))
+        if(parans) {
+            drawBoard();
+            processGame();
+            drawElements();
+        }        
+    }, (1000 / 5) )
+}
+
+function updateParans(response) {
+    console.log("updateParans");
+
+    parans = response;
+    response = null;
+
+    let ctx = document.getElementById(CANVAS_ID).getContext("2d");
+    ctx.canvas.width = parans.WIDTH;
+    ctx.canvas.height = parans.HEIGHT;
 }
 
 function processGame() {
@@ -124,14 +133,14 @@ function processGame() {
         if (snake[i] != null && snake[i] != undefined) {
 
             //if colide with self body
-            if(snake[0].col == snake[i].col && snake[0].line == snake[i].line) {
+            if (snake[0].col == snake[i].col && snake[0].line == snake[i].line) {
                 window.clearInterval(interval);
             }
 
             let pos = { col: snake[i].col, line: snake[i].line };
 
-            snake[i].col = anchorPosition.col; 
-            snake[i].line = anchorPosition.line; 
+            snake[i].col = anchorPosition.col;
+            snake[i].line = anchorPosition.line;
 
             anchorPosition = pos;
         }
@@ -143,14 +152,14 @@ function processGame() {
         addBodyCel();
         score++;
         document.getElementById("scoreText").innerText = "Score: " + score;
-    }    
+    }
 }
 
 function addBodyCel() {
 
     let lastSnakePositon = snake[snake.length - 1];
     let newSnakeBodyPosition = { col: lastSnakePositon.col, line: lastSnakePositon.line };
-    
+
     if (snakeDirection == KEYCODE_RIGTH) {
         newSnakeBodyPosition.col = lastSnakePositon.col - 1;
     }
@@ -187,17 +196,18 @@ function drawElements() {
 }
 
 function drawBoard() {
+    console.log("drawBoard()");
 
     let ctx = document.getElementById(CANVAS_ID).getContext("2d");
 
-    for (let i = 0; i < COLUMNS; i++) {
-        for (let j = 0; j < LINES; j++) {
+    for (let i = 0; i < parans.COLUMNS; i++) {
+        for (let j = 0; j < parans.LINES; j++) {
 
-            let x = i * CEL_SIZE;
-            let y = j * CEL_SIZE;
+            let x = i * parans.CEL_SIZE;
+            let y = j * parans.CEL_SIZE;
 
-            ctx.fillStyle = BG_COLOR;
-            ctx.fillRect(x, y, WIDTH, HEIGHT);
+            ctx.fillStyle = parans.BG_COLOR;
+            ctx.fillRect(x, y, parans.WIDTH, parans.HEIGHT);
         }
     }
 }
