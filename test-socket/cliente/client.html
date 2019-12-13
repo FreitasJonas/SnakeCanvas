@@ -28,17 +28,12 @@
         client.onmessage = function (e) {
             console.log("Received: '" + e.data + "'");
         };
-        
-        
-        
     })
 
     $('#submit').click(function() {
 
-        client.send(JSON.stringify({ msg: 'Emitir' }));
-        
+        client.send(JSON.stringify({ msg: 'Emitir' }));        
     })
-
     
 </script>
 
