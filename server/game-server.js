@@ -1,36 +1,48 @@
-const gc = require('./game-controller');
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const bodyParser = require('body-parser');
+// Node.js WebSocket server script
+const http = require('http');
+const WebSocketServer = require('websocket').server;
+const server = http.createServer();
 
-const PORT = 7000
-const IP = 'localhost'
+server.listen(9898);
 
-app.use(cors())
+session = { id: "123456", clients: [] }
+sessions = [session];
 
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-
-app.get('/verify', function (req, res, next) {
-    res.json('Server OK!')
-})
-
-app.get('/conect', function (req, res, next) {
-    res.json('Connected');
-})
-
-app.get('/get-parans', function (req, res, next) {
-    res.json(gc.getParans());
-})
-
-app.post('/send-player-name', function(req, res) {
-    var user_id = req.body.playerName;
-    res.send("Recebido " + user_id);
+const wsServer = new WebSocketServer({
+    httpServer: server
 });
 
+wsServer.on('request', function(request) {
 
-app.listen(PORT, IP, function () {
-    console.log(`Servidor rodando em http://${IP}:${PORT}`);
-    console.log('Para derrubar o servidor: ctrl + c');
-})
+    const connection = request.accept(null, request.origin);
+    sessions[0].clients.push({ connection: connection, key: request.key });
+    console.log("Cliente conectado! \nKey: " + request.key + " Sessão: " + sessions[0].id);
+
+    connection.on('message', function(message) {
+
+        let obj = JSON.parse(message.utf8Data);
+
+        if(obj.msg == 'Open') {
+            connection.send("Conectado! \nKey: " + request.key + " Sessão: " + sessions[0].id);
+        }
+        else if (obj.msg == 'Emitir') {
+
+            sessions[0].clients.forEach(client => {
+                client.connection.send('Emissão para todos os clientes');
+            });
+        }
+        else {
+            connection.sendUTF('Hi this is WebSocket server!');
+        }
+    });
+    
+    connection.on('close', function(reasonCode, description) {
+        for(let i = 0; i < sessions[0].clients.length; i++) {
+            if(sessions[0].clients[i].key == request.key) {
+                console.log('Cliente desconectado: ' + sessions[0].clients[i].key);
+                sessions[0].clients.splice(i, 1);
+                break;
+            }
+        }
+    });
+});
