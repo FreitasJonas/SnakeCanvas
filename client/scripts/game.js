@@ -1,57 +1,3 @@
-const CANVAS_ID = "game";
-
-const COLUMNS = 30;
-const LINES = 50;
-
-const CEL_SIZE = 12;
-
-const WIDTH = CEL_SIZE * COLUMNS;
-const HEIGHT = CEL_SIZE * LINES;
-
-const BG_COLOR = "#000000";
-const CEL_COLOR = "#C0C0C0";
-const APPLE_COLOR = "#d12300";
-
-const KEYCODE_UP = 38;
-const KEYCODE_DOW = 40;
-const KEYCODE_RIGTH = 39;
-const KEYCODE_LEFT = 37;
-const KEYCODE_SPACE_BAR = 32;
-
-var interval = null;
-
-var score = 0;
-var DIFICULTY = 5;
-var snakeDirection = KEYCODE_RIGTH;
-var snake = [];
-var applePosition = { col: 19, line: 10 };
-
-moveFunctions = {
-    ArrowUp: function () {
-
-        if (snakeDirection !== KEYCODE_DOW) {
-            snakeDirection = KEYCODE_UP;
-        }
-    },
-    ArrowDown: function () {
-
-        if (snakeDirection !== KEYCODE_UP) {
-            snakeDirection = KEYCODE_DOW;
-        }
-    },
-    ArrowRight: function () {
-
-        if (snakeDirection !== KEYCODE_LEFT) {
-            snakeDirection = KEYCODE_RIGTH;
-        }
-    },
-    ArrowLeft: function () {
-
-        if (snakeDirection !== KEYCODE_RIGTH) {
-            snakeDirection = KEYCODE_LEFT;
-        }
-    }
-}
 
 window.onload = function (e) {
     console.log("Ready");
@@ -66,6 +12,17 @@ window.onload = function (e) {
         let fnMove = moveFunctions[event.key];
             if (fnMove) {
                 fnMove();
+
+                this.SendCommand({ 
+                    command: 'PlayerMoviment',
+                    sessionId: sessionID,
+                    clientId: clientID,
+                    content: {
+                        col: snake[0].col,
+                        line: snake[0].line,
+                        dir: snakeDirection
+                    }
+                });
             }
         }
     );
@@ -75,9 +32,12 @@ window.onload = function (e) {
     // game layer
     interval = window.setInterval(function (e) {
 
-        drawBoard();
-        processGame();
-        drawElements();
+        if(readyToPlay) {
+
+            drawBoard();
+            processGame();
+            drawElements();
+        }
 
     }, (1000 / DIFICULTY) )
 }

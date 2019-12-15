@@ -16,7 +16,18 @@ module.exports = {
             CEL_COLOR: "#C0C0C0",
             APPLE_COLOR: "#d12300",
         
-            DIFICULTY: 10
+            DIFICULTY: 5
         }
-    }    
+    },
+    
+    getDirections: function() {
+
+        return {
+            KEYCODE_UP: 38,
+            KEYCODE_DOW: 40,
+            KEYCODE_RIGTH: 39,
+            KEYCODE_LEFT: 37,
+            KEYCODE_SPACE_BAR: 32
+        }                
+    }
   };
